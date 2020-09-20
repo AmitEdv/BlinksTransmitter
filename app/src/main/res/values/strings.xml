@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BlinksTransmitter</string>
+    <string name="stage1_btn">stage 1</string>
 </resources>
