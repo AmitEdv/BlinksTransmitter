@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -20,10 +21,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int DELAY_BETWEEN_BITS_DURATION_millies = 500; //0.5 sec
     private static final int BIT_TRANSFER_DURATION_millies = 500; //0.5 sec
     private static final int BIT_TRANSFER_FULL_DUTY_CYCLE_DURATION_millies = BIT_TRANSFER_DURATION_millies + DELAY_BETWEEN_BITS_DURATION_millies;
-    private static final String SEQUENCE_TO_TRANSMIT = "1010";
 
     private RelativeLayout mClockLayout;
     private RelativeLayout mDataLayout;
+    private EditText mInputEditText;
     private Button mStartTransmitButton;
     private Timer mTimer;
     String mSequenceToTransmitQueueMSB = "";
@@ -35,10 +36,11 @@ public class MainActivity extends AppCompatActivity {
         mClockLayout = findViewById(R.id.clock_layout);
         mDataLayout = findViewById(R.id.data_layout);
         mStartTransmitButton = findViewById(R.id.start_transmit_btn);
+        mInputEditText = findViewById(R.id.input_et);
     }
 
     public void onClick_transmit(View view) {
-        String sequenceToTransmit = SEQUENCE_TO_TRANSMIT;
+        String sequenceToTransmit = mInputEditText.getText().toString();
         Log.i(TAG, "onClick_transmit(): sequenceToTransmit = " + sequenceToTransmit);
         if (!isInputToTransmitValid(sequenceToTransmit)) {
             return;

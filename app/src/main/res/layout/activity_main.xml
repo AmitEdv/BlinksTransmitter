@@ -50,15 +50,32 @@
             />
         </RelativeLayout>
 
-        <Button
-        android:id="@+id/start_transmit_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/stage1_btn"
-        android:onClick="onClick_transmit"
-        />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+
+            <Button
+            android:id="@+id/start_transmit_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stage1_btn"
+            android:onClick="onClick_transmit"
+            />
+
+            <EditText
+                android:id="@+id/input_et"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/start_transmit_btn"
+                android:layout_toRightOf="@+id/start_transmit_btn"
+                android:hint="@string/input_hint"
+                />
+        </RelativeLayout>
 
     </LinearLayout>
+
 
 
 

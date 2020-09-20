@@ -3,4 +3,5 @@
     <string name="stage1_btn">Transmit!</string>
     <string name="clock_title">Clock</string>
     <string name="data_title">Data</string>
+    <string name="input_hint">bits input</string>
 </resources>
