@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,9 +20,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int DELAY_BETWEEN_BITS_DURATION_millies = 500; //0.5 sec
     private static final int BIT_TRANSFER_DURATION_millies = 500; //0.5 sec
     private static final int BIT_TRANSFER_FULL_DUTY_CYCLE_DURATION_millies = BIT_TRANSFER_DURATION_millies + DELAY_BETWEEN_BITS_DURATION_millies;
-    private static final String SEQUENCE_TO_TRANSMIT = "1111";
+    private static final String SEQUENCE_TO_TRANSMIT = "1010";
 
-    private LinearLayout mRightBlinkLinearLayout;
+    private RelativeLayout mClockLayout;
+    private RelativeLayout mDataLayout;
     private Button mStartTransmitButton;
     private Timer mTimer;
     String mSequenceToTransmitQueueMSB = "";
@@ -30,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRightBlinkLinearLayout = findViewById(R.id.right_blink_ll);
+        mClockLayout = findViewById(R.id.clock_layout);
+        mDataLayout = findViewById(R.id.data_layout);
         mStartTransmitButton = findViewById(R.id.start_transmit_btn);
     }
 
@@ -98,8 +101,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (isDataBitOn) {
-                            mRightBlinkLinearLayout.setBackgroundColor(Color.WHITE);
+                            mDataLayout.setBackgroundColor(Color.WHITE);
                         }
+
+                        mClockLayout.setBackgroundColor(Color.WHITE);
                     }
                 }
         );
@@ -112,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
                 new Runnable() {
                     @Override
                     public void run() {
-                        mRightBlinkLinearLayout.setBackgroundColor(Color.BLACK);
+                        mDataLayout.setBackgroundColor(Color.BLACK);
+                        mClockLayout.setBackgroundColor(Color.BLACK);
                     }
                 }
         );

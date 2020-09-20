@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">BlinksTransmitter</string>
     <string name="stage1_btn">Transmit!</string>
+    <string name="clock_title">Clock</string>
+    <string name="data_title">Data</string>
 </resources>
