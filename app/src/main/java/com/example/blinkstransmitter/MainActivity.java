@@ -4,69 +4,110 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int INITIAL_DELAY_millies = 10000; //10 sec
-    private static final int SCREEN_OFF_DURATION_millies = 500; //0.5 sec
-    private static final int SCREEN_ON_DURATION_millies = 500; //0.5 sec
-    private static final int SCREEN_BLINK_DURATION_millies = SCREEN_ON_DURATION_millies + SCREEN_OFF_DURATION_millies;
-    private static final int STAGE_1_REQUIRED_BLINKS_AMOUNT = 4;
+    private static final String TAG = "MainActivity";
+
+    private static final int INITIAL_DELAY_millies = 5000; //5 sec
+    private static final int DELAY_BETWEEN_BITS_DURATION_millies = 500; //0.5 sec
+    private static final int BIT_TRANSFER_DURATION_millies = 500; //0.5 sec
+    private static final int BIT_TRANSFER_FULL_DUTY_CYCLE_DURATION_millies = BIT_TRANSFER_DURATION_millies + DELAY_BETWEEN_BITS_DURATION_millies;
+    private static final String SEQUENCE_TO_TRANSMIT = "1111";
 
     private LinearLayout mRightBlinkLinearLayout;
-    private Timer mTimer = new Timer();
-    private int mStageOneBlinksCounter = 0;
+    private Button mStartTransmitButton;
+    private Timer mTimer;
+    String mSequenceToTransmitQueueMSB = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRightBlinkLinearLayout = findViewById(R.id.right_blink_ll);
+        mStartTransmitButton = findViewById(R.id.start_transmit_btn);
     }
 
-    public void onClick_stage1(View view) {
-
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                setScreenOn();
-            }
-        }, INITIAL_DELAY_millies , SCREEN_BLINK_DURATION_millies);
-
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                setScreenOff();
-            }
-        }, INITIAL_DELAY_millies + SCREEN_ON_DURATION_millies, SCREEN_BLINK_DURATION_millies);
-    }
-
-    private void setScreenOn()
-    {
-        mStageOneBlinksCounter++;
+    public void onClick_transmit(View view) {
+        String sequenceToTransmit = SEQUENCE_TO_TRANSMIT;
+        Log.i(TAG, "onClick_transmit(): sequenceToTransmit = " + sequenceToTransmit);
+        if (!isInputToTransmitValid(sequenceToTransmit)) {
+            return;
+        }
 
         this.runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
-                        mRightBlinkLinearLayout.setBackgroundColor(Color.WHITE);
+                        mStartTransmitButton.setEnabled(false);
                     }
                 }
         );
+
+        mSequenceToTransmitQueueMSB = sequenceToTransmit;
+        mTimer =  new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                transmitNextBit();
+            }
+        }, INITIAL_DELAY_millies , BIT_TRANSFER_FULL_DUTY_CYCLE_DURATION_millies);
+
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                setOffAndWaitBetweenBits();
+            }
+        }, INITIAL_DELAY_millies + BIT_TRANSFER_DURATION_millies, BIT_TRANSFER_FULL_DUTY_CYCLE_DURATION_millies);
     }
 
-    private void setScreenOff()
-    {
-        if (mStageOneBlinksCounter >= STAGE_1_REQUIRED_BLINKS_AMOUNT) {
-            resetStage1();
+    private boolean isInputToTransmitValid(String input) {
+        if (input.isEmpty()) {
+            return false;
         }
 
+        if (!input.matches("^[01]+$")) {
+            Log.e(TAG, "input not valid");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void transmitNextBit()
+    {
+        Log.i(TAG, "transmitNextBit: called");
+        if (mSequenceToTransmitQueueMSB.length() == 0) {
+            endTransmission();
+            return;
+        }
+
+        Log.d(TAG, "transmitNextBit: mSequenceToTransmitQueueMSB = " + mSequenceToTransmitQueueMSB);
+        final boolean isDataBitOn = Integer.parseInt(mSequenceToTransmitQueueMSB.substring(0,1)) == 1;
+        mSequenceToTransmitQueueMSB = mSequenceToTransmitQueueMSB.substring(1);
+        Log.d(TAG, "transmitNextBit: dataOn = " + isDataBitOn + " subString = " + mSequenceToTransmitQueueMSB);
+
+        this.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isDataBitOn) {
+                            mRightBlinkLinearLayout.setBackgroundColor(Color.WHITE);
+                        }
+                    }
+                }
+        );
+
+    }
+
+    private void setOffAndWaitBetweenBits()
+    {
         this.runOnUiThread(
                 new Runnable() {
                     @Override
@@ -77,9 +118,19 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private void resetStage1() {
-        mStageOneBlinksCounter = 0;
+    private void endTransmission() {
         mTimer.cancel();
+
+        this.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mStartTransmitButton.setEnabled(true);
+                    }
+                }
+        );
     }
 
-}
+
+
+} //END CLASS

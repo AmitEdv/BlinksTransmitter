@@ -14,11 +14,12 @@
         >
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/stage1_btn"
-            android:onClick="onClick_stage1"
-            />
+        android:id="@+id/start_transmit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/stage1_btn"
+        android:onClick="onClick_transmit"
+        />
 
         <TextView
             android:layout_width="wrap_content"
